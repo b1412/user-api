@@ -12,6 +12,7 @@ import com.github.b1412.permission.dao.BranchDao
 import com.github.b1412.permission.dao.RoleDao
 import com.github.b1412.permission.entity.User
 import com.github.b1412.permission.service.UserService
+import com.github.b1412.user.config.UserApiProperties
 import com.github.b1412.user.event.NewUserAction
 import com.github.b1412.user.event.NewUserEvent
 import org.hibernate.validator.constraints.Length
@@ -41,6 +42,7 @@ class UserControllerCustom(
     val applicationEventPublisher: ApplicationEventPublisher,
     @Value("\${spring.application.name}")
     val application: String,
+    val properties: UserApiProperties
 ) {
     @PermissionFeatureIgnore
     @PostMapping("/register")
@@ -56,14 +58,14 @@ class UserControllerCustom(
         //           return ResponseEntity.badRequest().body(ErrorDTO(message = "password not equal"))
         //       }
 
-        val clientId = "4"
+        val clientId = properties.clientId!!
         user.setUsername(user.email!!)
         user.setPassword(passwordEncoder.encode(user.password))
-        user.active = false
+        user.active = properties.active
         user.clientId = clientId
 
-        val role = roleDao.findByIdOrNull(user.role!!.id)
-        val branch = branchDao.findByIdOrNull(1L)
+        val role = roleDao.findByIdOrNull(properties.roleId ?: user.role!!.id)
+        val branch = branchDao.findByIdOrNull(properties.branchId!!)
         user.role = role
         user.branch = branch
         userService.save(user)

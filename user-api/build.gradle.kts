@@ -49,6 +49,7 @@ val emailVersion: String by project
 dependencies {
     api(project(":user-generated"))
     implementation("com.github.b1412:permission-api:${permissionVersion}")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 tasks.withType<KotlinCompile> {
